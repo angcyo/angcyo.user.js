@@ -3,7 +3,7 @@
 // @namespace    https://github.com/angcyo
 // @version      0.2
 // @description  2022-11-22
-// @author       You
+// @author       angcyo
 // @match        http://*/*
 // @match        https://*/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
