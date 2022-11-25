@@ -17,6 +17,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
+// @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
@@ -36,8 +37,7 @@
         GM_setValue("areaCode", data);
         localStorage.setItem("areaCode", JSON.stringify(data));
         //GM_setValue(storageKey, currentNumberOfDays);
-
-        console.log(getAreaCode("中国"));
+        //console.log(getAreaCode("中国"));
       }
     },
   });
@@ -53,23 +53,63 @@
       const list = [...p[0]?.childNodes]?.slice(-3);
       if (list?.length >= 3) {
         let country = $(list[0]).text();
-        let phone = $(list[2]).text();
+        let phoneText = $(list[2]).text();
+        let phone = phoneText;
         console.log(country);
         console.log(phone);
+
+        const acReg = /[()\+]/g; //是否有区号的正则表达式
         phone = phone.replaceAll(/[\s*()\+]/g, "");
-        $(p).append(createWhatsAppLink(phone));
+
+        if (country) {
+          //有国家
+          if (phoneText.search(acReg) != -1) {
+            //已经有区号
+          } else {
+            //没有区号, 则自动补齐区号, 并且自动去除前面的0
+            phone = getAreaCode(country) + phone.replace(/^0+/, "");
+          }
+        }
+
+        $(p).append(createWhatsAppLinkHtml(phone));
+        $("#whatsApp").click(function (e) {
+          //const url = $(e.currentTarget).attr("value-url");
+          //window.open(url);
+          //GM_openInTab(url);
+          const phone = $("#whatsAppPhone").val();
+          if (phone) {
+            const url = createWhatsAppLink(phone);
+            console.log(`打开:${url}`);
+            location.href = url;
+          }
+        });
       }
     }
   });
 
+  function createWhatsAppLink(phone) {
+    if (phone) {
+      return `whatsapp://send/?phone=${phone}`;
+    }
+    return "";
+  }
+
   /**
    * @returns 创建一个whats app链接html
    */
-  function createWhatsAppLink(phone) {
-    const url = `whatsapp://send/?phone=${phone}`;
+  function createWhatsAppLinkHtml(phone) {
+    const url = createWhatsAppLink(phone);
     console.log(url);
-    return `<a id="whatsApp" href="${url}" target="_blank" style="text-decoration: none;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 39 39"><path fill="#00E676" d="M10.7 32.8l.6.3c2.5 1.5 5.3 2.2 8.1 2.2 8.8 0 16-7.2 16-16 0-4.2-1.7-8.3-4.7-11.3s-7-4.7-11.3-4.7c-8.8 0-16 7.2-15.9 16.1 0 3 .9 5.9 2.4 8.4l.4.6-1.6 5.9 6-1.5z"></path><path fill="#FFF" d="M32.4 6.4C29 2.9 24.3 1 19.5 1 9.3 1 1.1 9.3 1.2 19.4c0 3.2.9 6.3 2.4 9.1L1 38l9.7-2.5c2.7 1.5 5.7 2.2 8.7 2.2 10.1 0 18.3-8.3 18.3-18.4 0-4.9-1.9-9.5-5.3-12.9zM19.5 34.6c-2.7 0-5.4-.7-7.7-2.1l-.6-.3-5.8 1.5L6.9 28l-.4-.6c-4.4-7.1-2.3-16.5 4.9-20.9s16.5-2.3 20.9 4.9 2.3 16.5-4.9 20.9c-2.3 1.5-5.1 2.3-7.9 2.3zm8.8-11.1l-1.1-.5s-1.6-.7-2.6-1.2c-.1 0-.2-.1-.3-.1-.3 0-.5.1-.7.2 0 0-.1.1-1.5 1.7-.1.2-.3.3-.5.3h-.1c-.1 0-.3-.1-.4-.2l-.5-.2c-1.1-.5-2.1-1.1-2.9-1.9-.2-.2-.5-.4-.7-.6-.7-.7-1.4-1.5-1.9-2.4l-.1-.2c-.1-.1-.1-.2-.2-.4 0-.2 0-.4.1-.5 0 0 .4-.5.7-.8.2-.2.3-.5.5-.7.2-.3.3-.7.2-1-.1-.5-1.3-3.2-1.6-3.8-.2-.3-.4-.4-.7-.5h-1.1c-.2 0-.4.1-.6.1l-.1.1c-.2.1-.4.3-.6.4-.2.2-.3.4-.5.6-.7.9-1.1 2-1.1 3.1 0 .8.2 1.6.5 2.3l.1.3c.9 1.9 2.1 3.6 3.7 5.1l.4.4c.3.3.6.5.8.8 2.1 1.8 4.5 3.1 7.2 3.8.3.1.7.1 1 .2h1c.5 0 1.1-.2 1.5-.4.3-.2.5-.2.7-.4l.2-.2c.2-.2.4-.3.6-.5s.4-.4.5-.6c.2-.4.3-.9.4-1.4v-.7s-.1-.1-.3-.2z"></path></svg></a>`;
+    return `
+    <div id="whatsAppWrap">
+      <input type="text" id="whatsAppPhone" name="whatsAppPhone" placeholder="whatsApp账号" value="${phone}"></input>
+      <a id="whatsApp" href="javascript:void(0);" value-url="${url} "style="text-decoration: none; display:inline-block !important">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 39 39" style="vertical-align: middle;">
+          <path fill="#00E676" d="M10.7 32.8l.6.3c2.5 1.5 5.3 2.2 8.1 2.2 8.8 0 16-7.2 16-16 0-4.2-1.7-8.3-4.7-11.3s-7-4.7-11.3-4.7c-8.8 0-16 7.2-15.9 16.1 0 3 .9 5.9 2.4 8.4l.4.6-1.6 5.9 6-1.5z"></path><path fill="#FFF" d="M32.4 6.4C29 2.9 24.3 1 19.5 1 9.3 1 1.1 9.3 1.2 19.4c0 3.2.9 6.3 2.4 9.1L1 38l9.7-2.5c2.7 1.5 5.7 2.2 8.7 2.2 10.1 0 18.3-8.3 18.3-18.4 0-4.9-1.9-9.5-5.3-12.9zM19.5 34.6c-2.7 0-5.4-.7-7.7-2.1l-.6-.3-5.8 1.5L6.9 28l-.4-.6c-4.4-7.1-2.3-16.5 4.9-20.9s16.5-2.3 20.9 4.9 2.3 16.5-4.9 20.9c-2.3 1.5-5.1 2.3-7.9 2.3zm8.8-11.1l-1.1-.5s-1.6-.7-2.6-1.2c-.1 0-.2-.1-.3-.1-.3 0-.5.1-.7.2 0 0-.1.1-1.5 1.7-.1.2-.3.3-.5.3h-.1c-.1 0-.3-.1-.4-.2l-.5-.2c-1.1-.5-2.1-1.1-2.9-1.9-.2-.2-.5-.4-.7-.6-.7-.7-1.4-1.5-1.9-2.4l-.1-.2c-.1-.1-.1-.2-.2-.4 0-.2 0-.4.1-.5 0 0 .4-.5.7-.8.2-.2.3-.5.5-.7.2-.3.3-.7.2-1-.1-.5-1.3-3.2-1.6-3.8-.2-.3-.4-.4-.7-.5h-1.1c-.2 0-.4.1-.6.1l-.1.1c-.2.1-.4.3-.6.4-.2.2-.3.4-.5.6-.7.9-1.1 2-1.1 3.1 0 .8.2 1.6.5 2.3l.1.3c.9 1.9 2.1 3.6 3.7 5.1l.4.4c.3.3.6.5.8.8 2.1 1.8 4.5 3.1 7.2 3.8.3.1.7.1 1 .2h1c.5 0 1.1-.2 1.5-.4.3-.2.5-.2.7-.4l.2-.2c.2-.2.4-.3.6-.5s.4-.4.5-.6c.2-.4.3-.9.4-1.4v-.7s-.1-.1-.3-.2z">
+          </path>
+        </svg>
+      </a>
+    </div>`;
   }
 
   //<h3 aria-label="收货地址" class="Polaris-Subheading_syouu">收货地址</h3>
@@ -122,7 +162,7 @@
     const data = GM_getValue("areaCode");
     //console.log(localStorage.getItem("areaCode"));
     //console.dir(data);
-    let result = undefined;
+    let result = "";
     Object.keys(data).forEach((items) => {
       if (key.search(new RegExp(items)) != -1) {
         //console.log("找到..." + key + "  " + items + "  " + data[items]);
