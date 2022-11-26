@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         angcyo
 // @namespace    https://github.com/angcyo
-// @version      0.4
+// @version      0.5
 // @description  2022-11-22
 // @author       angcyo
 // @license      MIT License
@@ -65,7 +65,7 @@
         console.log(phone);
 
         const acReg = /[()\+]/g; //是否有区号的正则表达式
-        phone = phone.replaceAll(/[\s*()\+]/g, "");
+        phone = phone.replaceAll(/[\s*()\+-]/g, "");
 
         if (country) {
           //有国家
