@@ -50,6 +50,7 @@
 
   //---
 
+  //观察元素变化, 查找匹配的目标, 追加指定的div元素
   watchElement(document.getElementsByTagName("body"), () => {
     if (!document.getElementById("whatsApp")) {
       const p = $("h3[aria-label=收货地址]")
