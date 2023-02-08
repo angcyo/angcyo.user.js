@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         angcyo
 // @namespace    https://github.com/angcyo
-// @version      0.5
+// @version      0.6
 // @description  2022-11-22
 // @author       angcyo
 // @license      MIT License
@@ -53,10 +53,20 @@
   //观察元素变化, 查找匹配的目标, 追加指定的div元素
   watchElement(document.getElementsByTagName("body"), () => {
     if (!document.getElementById("whatsApp")) {
-      const p = $("h3[aria-label=收货地址]")
-        .parent()
-        .parent(".Polaris-Card__Section_1b1h1")
-        .find("p");
+      //没有追加过whatsApp元素, 则查找目标追加
+
+      //$("h3[aria-label=收货地址]")
+      const h3 = $("h3[class^=Polaris-Text]").filter(function () {
+        return $(this).text() === "收货地址";
+      });
+      //识别到的标题, 背景提示
+      $(h3).css({ border: "1px dashed #0085f2" });
+
+      const p = h3.parents(".Polaris-Card__Section_1b1h1").find("p");
+
+      //识别到的p数据, 背景提示
+      $(p).css({ border: "1px dashed #0085f2" });
+
       const list = [...p[0]?.childNodes]?.slice(-3);
       if (list?.length >= 3) {
         let country = $(list[0]).text();

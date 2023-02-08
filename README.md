@@ -14,3 +14,10 @@
 # 在线发布
 
 https://greasyfork.org/zh-CN/
+
+
+# 测试目标
+
+https://www.shopify.com/
+
+https://laserpecker-net.myshopify.com/admin/orders
