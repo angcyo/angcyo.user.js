@@ -56,7 +56,7 @@
   const cardQuery =
     localStorage.getItem("cardQuery") ||
     ".Polaris-Polaris-LegacyCard__Section_1b1h1";
-  localStorage.setItem("cardQuery", titleQuery);
+  localStorage.setItem("cardQuery", cardQuery);
 
   //---
 
