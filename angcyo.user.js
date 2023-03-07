@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         angcyo
 // @namespace    https://github.com/angcyo
-// @version      0.6
+// @version      0.7
 // @description  2022-11-22
 // @author       angcyo
 // @license      MIT License
@@ -48,6 +48,16 @@
     },
   });
 
+  //标题选择器
+  const titleQuery =
+    localStorage.getItem("titleQuery") || "h3[class^=Polaris-Text]";
+  localStorage.setItem("titleQuery", titleQuery);
+  //卡片选择器
+  const cardQuery =
+    localStorage.getItem("cardQuery") ||
+    ".Polaris-Polaris-LegacyCard__Section_1b1h1";
+  localStorage.setItem("cardQuery", titleQuery);
+
   //---
 
   //观察元素变化, 查找匹配的目标, 追加指定的div元素
@@ -56,13 +66,13 @@
       //没有追加过whatsApp元素, 则查找目标追加
 
       //$("h3[aria-label=收货地址]")
-      const h3 = $("h3[class^=Polaris-Text]").filter(function () {
+      const h3 = $(titleQuery).filter(function () {
         return $(this).text() === "收货地址";
       });
       //识别到的标题, 背景提示
       $(h3).css({ border: "1px dashed #0085f2" });
 
-      const p = h3.parents(".Polaris-Card__Section_1b1h1").find("p");
+      const p = h3.parents(cardQuery).find("p");
 
       //识别到的p数据, 背景提示
       $(p).css({ border: "1px dashed #0085f2" });
