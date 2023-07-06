@@ -48,14 +48,13 @@
     },
   });
 
-  //标题选择器
+  //标题选择器, 核心定位
   const titleQuery =
     localStorage.getItem("titleQuery") || "h3[class^=Polaris-Text]";
   localStorage.setItem("titleQuery", titleQuery);
-  //卡片选择器
+  //卡片选择器, 通过标题, 查找卡片, 定位P数据段
   const cardQuery =
-    localStorage.getItem("cardQuery") ||
-    ".Polaris-Polaris-LegacyCard__Section_1b1h1";
+    localStorage.getItem("cardQuery") || ".Polaris-LegacyCard__Section_1b1h1";
   localStorage.setItem("cardQuery", cardQuery);
 
   //---
@@ -71,8 +70,14 @@
       });
       //识别到的标题, 背景提示
       $(h3).css({ border: "1px dashed #0085f2" });
+      GM_log("标题:" + h3.length);
 
-      const p = h3.parents(cardQuery).find("p");
+      const card = h3.parents(cardQuery);
+      GM_log("卡片:" + card.length);
+      $(card).css({ border: "1px dashed #0085f2" });
+
+      const p = card.find("p");
+      GM_log("段落:" + p.length);
 
       //识别到的p数据, 背景提示
       $(p).css({ border: "1px dashed #0085f2" });
