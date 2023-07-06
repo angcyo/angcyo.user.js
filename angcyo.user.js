@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         angcyo
 // @namespace    https://github.com/angcyo
-// @version      0.8
+// @version      0.9
 // @description  2022-11-22
 // @author       angcyo
 // @license      MIT License
